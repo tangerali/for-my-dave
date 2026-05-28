@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>iloveyoudave</title>
+    <!-- Google Fonts for an elegant, romantic look -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&family=Quicksand:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-color: #fff5f5;
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --primary-pink: #ffb3bc;
+            --dark-pink: #ff758f;
+            --text-color: #4a4a4a;
+            --accent-color: #c9184a;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Quicksand', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        .hearts-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .heart-particle {
+            position: absolute;
+            color: #ffcad4;
+            font-size: 1.2rem;
+            animation: float 8s infinite linear;
+            opacity: 0;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(-100%) translateX(0) scale(0.5) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) translateX(50px) scale(1) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .heart-particle:nth-child(1) { left: 10%; animation-delay: 0s; font-size: 1rem; }
+        .heart-particle:nth-child(2) { left: 25%; animation-delay: 2s; font-size: 1.5rem; }
+        .heart-particle:nth-child(3) { left: 40%; animation-delay: 1s; font-size: 1rem; }
+        .heart-particle:nth-child(4) { left: 60%; animation-delay: 4s; font-size: 1.8rem; }
+        .heart-particle:nth-child(5) { left: 75%; animation-delay: 6s; font-size: 1rem; }
+        .heart-particle:nth-child(6) { left: 90%; animation-delay: 3s; font-size: 1.3rem; }
+        .heart-particle:nth-child(7) { left: 15%; animation-delay: 5s; font-size: 1rem; }
+        .heart-particle:nth-child(8) { left: 35%; animation-delay: 7s; font-size: 1.2rem; }
+        .heart-particle:nth-child(9) { left: 50%; animation-delay: 1s; font-size: 1.6rem; }
+        .heart-particle:nth-child(10) { left: 80%; animation-delay: 3s; font-size: 1rm; }
+
+        #lock-screen, #letter-screen {
+            z-index: 2;
+            position: relative;
+        }
+
+        #lock-screen {
+            background: var(--card-bg);
+            padding: 40px 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(255, 179, 188, 0.3);
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+            transition: all 0.5s ease;
+        }
+
+        #lock-screen h2 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            color: var(--accent-color);
+        }
+
+        #lock-screen p {
+            font-size: 0.9rem;
+            color: #7d7d7d;
+            margin-bottom: 25px;
+        }
+
+        .pin-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .pin-dot {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--primary-pink);
+            border-radius: 50%;
+            transition: background-color 0.2s ease;
+        }
+
+        .pin-dot.filled {
+            background-color: var(--dark-pink);
+            border-color: var(--dark-pink);
+        }
+
+        .keypad {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            max-width: 250px;
+            margin: 0 auto;
+        }
+
+        .key {
+            background: #fff0f1;
+            border: none;
+            padding: 15px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text-color);
+            border-radius: 50%;
+            cursor: pointer;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background 0.2s ease, transform 0.1s ease;
+            margin: 0 auto;
+        }
+
+        .key:active {
+            background: var(--primary-pink);
+            transform: scale(0.95);
+        }
+
+        .key.clear, .key.enter {
+            font-size: 0.9rem;
+            background: #f7e1e3;
+            border-radius: 50%;
+        }
+
+        .key.clear:active, .key.enter:active {
+            background: var(--primary-pink);
+        }
+
+        .error-message {
+            color: var(--accent-color);
+            font-size: 0.95rem;
+            font-weight: 500;
+            margin-top: 20px;
+            height: 20px;
+            visibility: hidden;
+        }
+
+        #letter-screen {
+            display: none;
+            background: var(--card-bg);
+            max-width: 600px;
+            width: 100%;
+            padding: 40px 30px;
+            border-radius: 24px;
+            box-shadow: 0 15px 40px rgba(255, 179, 188, 0.25);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+            position: relative;
+        }
+
+        .clickable-letter-area {
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            border-radius: 12px;
+        }
+        
+        .clickable-letter-area:hover {
+            background-color: rgba(255, 240, 241, 0.5);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 35px;
+            border-bottom: 1px dashed var(--primary-pink);
+            padding-bottom: 20px;
+        }
+
+        .title {
+            font-family: 'Dancing Script', cursive;
+            font-size: 2.8rem;
+            color: var(--accent-color);
+            margin-bottom: 5px;
+        }
+
+        .date {
+            font-size: 0.9rem;
+            color: #9b9b9b;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .message-body {
+            line-height: 1.8;
+            font-size: 1.05rem;
+            color: #444444;
+            text-align: justify;
+            padding: 0 5px;
+        }
+
+        .message-body p {
+            margin-bottom: 20px;
+        }
+        
+        .indent-p {
+            text-indent: 20px;
+        }
+
+        .closing {
+            margin-top: 30px;
+            text-align: right;
+            font-size: 1.1rem;
+            padding-bottom: 15px;
+        }
+
+        .sign-off {
+            font-size: 1.1rem;
+            color: var(--text-color);
+            margin-top: 5px;
+        }
+
+        .click-hint {
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--dark-pink);
+            margin-top: 15px;
+            padding-bottom: 20px;
+            border-bottom: 1px dashed var(--primary-pink);
+            font-weight: 500;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.6; }
+            50% { opacity: 1; transform: scale(1.02); }
+            100% { opacity: 0.6; }
+        }
+
+        .photo-gallery {
+            display: none;
+            margin-top: 35px;
+            text-align: center;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 1s ease, transform 1s ease;
+        }
+
+        .photo-gallery.show {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .gallery-title {
+            font-family: 'Dancing Script', cursive;
+            font-size: 2.2rem;
+            color: var(--accent-color);
+            margin-bottom: 24px;
+        }
+
+        .vertical-stack {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
+            max-width: 100%;
+            margin: 0 auto;
+        }
+
+        .photo-frame {
+            max-width: 90%;
+            width: 400px;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .photo-frame img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        /* Scrapbook rotations */
+        .photo-frame:nth-child(1) { transform: rotate(-2deg); }
+        .photo-frame:nth-child(2) { transform: rotate(2deg); }
+        .photo-frame:nth-child(3) { transform: rotate(-1deg); }
+
+        .photo-frame:nth-child(1):hover {
+            transform: translateY(-8px) rotate(-1deg) scale(1.03);
+        }
+        
+        .photo-frame:nth-child(2):hover {
+            transform: translateY(-8px) rotate(1deg) scale(1.03);
+        }
+
+        .photo-frame:nth-child(3):hover {
+            transform: translateY(-8px) rotate(0deg) scale(1.03);
+        }
+
+        @media (max-width: 480px) {
+            #letter-screen { padding: 25px 20px; }
+            .title { font-size: 2.2rem; }
+            .message-body { font-size: 1rem; }
+            .vertical-stack { gap: 20px; }
+            .photo-frame { width: 100%; }
+            .gallery-title { font-size: 1.8rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Hearts Animation Layer -->
+    <div class="hearts-bg">
+        <span class="heart-particle">♥</span><span class="heart-particle">♥</span><span class="heart-particle">♥</span>
+        <span class="heart-particle">♥</span><span class="heart-particle">♥</span><span class="heart-particle">♥</span>
+        <span class="heart-particle">♥</span><span class="heart-particle">♥</span><span class="heart-particle">♥</span>
+        <span class="heart-particle">♥</span>
+    </div>
+
+    <!-- Lock Screen Section -->
+    <div id="lock-screen">
+        <h2>password muna, baby ko ;)</h2>
+        <p>4 numbers only, clue: anniv :3</p>
+        
+        <div class="pin-container">
+            <div class="pin-dot" id="dot-0"></div>
+            <div class="pin-dot" id="dot-1"></div>
+            <div class="pin-dot" id="dot-2"></div>
+            <div class="pin-dot" id="dot-3"></div>
+        </div>
+
+        <div class="keypad">
+            <button class="key" onclick="pressKey('1')">1</button>
+            <button class="key" onclick="pressKey('2')">2</button>
+            <button class="key" onclick="pressKey('3')">3</button>
+            <button class="key" onclick="pressKey('4')">4</button>
+            <button class="key" onclick="pressKey('5')">5</button>
+            <button class="key" onclick="pressKey('6')">6</button>
+            <button class="key" onclick="pressKey('7')">7</button>
+            <button class="key" onclick="pressKey('8')">8</button>
+            <button class="key" onclick="pressKey('9')">9</button>
+            <button class="key clear" onclick="clearPin()">clear</button>
+            <button class="key" onclick="pressKey('0')">0</button>
+            
+            <button class="key enter" onclick="checkPin()">enter</button>
+        </div>
+        
+        <div class="error-message" id="error-msg">mali po, baby. please try again ;)</div>
+    </div>
+
+    <!-- Letter Content Section -->
+    <div id="letter-screen">
+        <div class="clickable-letter-area" onclick="revealPhotos()">
+            <div class="header">
+                <h1 class="title">twelfth :3</h1>
+                <div class="date">06 . 02 . 26</div>
+            </div>
+
+            <div class="message-body">
+                <p class="indent-p">happy anniversary, my baby!</p>
+                <p class="indent-p">sa lahat ng lifetime na mararanasan ko, i would always pick this one, i would pick you, every single time, in every universe, in every lifetime, walang alinlangan na ikaw ang pipiliin ko. we are always meant to be, always, in all ways.</p>
+                <p class="indent-p">always remember na you hold the most sacred part of my heart, and loving you is the most natural feeling that has ever lived inside me. my heart is so full dahil sa iyo, baby, fuller than i ever thought it could be. i wish na there would be more words to say and more ways to show kung gaano kita kamahal, at mamahalin pa.</p>
+                <p class="indent-p">i fall more in love with you araw-araw, and through good and bad, especially bad, i will always be here. as long as buhay ako, you will always have someone who loves you truly and genuinely.</p>
+                <p class="indent-p">i could wish for more, because my life with you is already perfect.</p>
+                <p class="indent-p">i love you so much, my bebe :3</p>
+            </div>
+
+            <div class="closing">
+                <p>yours always,</p>
+                <div class="sign-off">mhikyla &lt;3</div>
+            </div>
+            
+            <div class="click-hint" id="tap-hint">press the letter po for a cotie surprise :3</div>
+        </div>
+
+        <!-- Photos Section -->
+        <div class="photo-gallery" id="hidden-gallery">
+            <h2 class="gallery-title">our cotie pics with you smiling :3</h2>
+            <div class="vertical-stack">
+                <!-- Photo 1 -->
+                <div class="photo-frame">
+                    <img src="photo_6161068172103501759_y.png" alt="Our memory 1">
+                </div>
+                <!-- Photo 2 -->
+                <div class="photo-frame">
+                    <img src="photo_6147906901954905334_y.png" alt="Our memory 2">
+                </div>
+                <!-- Photo 3 -->
+                <div class="photo-frame">
+                    <img src="photo_6296468953140151842_y.png" alt="Our memory 3">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const CORRECT_PIN = "0602";
+        let currentPin = "";
+
+        function pressKey(num) {
+            if (currentPin.length < 4) {
+                currentPin += num;
+                updateDots();
+                document.getElementById('error-msg').style.visibility = 'hidden';
+            }
+        }
+
+        function clearPin() {
+            currentPin = "";
+            updateDots();
+            document.getElementById('error-msg').style.visibility = 'hidden';
+        }
+
+        function updateDots() {
+            for (let i = 0; i < 4; i++) {
+                const dot = document.getElementById(`dot-${i}`);
+                if (i < currentPin.length) {
+                    dot.classList.add('filled');
+                } else {
+                    dot.classList.remove('filled');
+                }
+            }
+        }
+
+        function checkPin() {
+            if (currentPin === CORRECT_PIN) {
+                revealLetter();
+            } else {
+                document.getElementById('error-msg').style.visibility = 'visible';
+                currentPin = "";
+                for(let i=0; i<4; i++) {
+                     document.getElementById(`dot-${i}`).classList.remove('filled');
+                }
+            }
+        }
+
+        function revealLetter() {
+            const lockScreen = document.getElementById('lock-screen');
+            lockScreen.style.opacity = '0';
+            lockScreen.style.transform = 'scale(0.9)';
+            
+            setTimeout(() => {
+                lockScreen.style.display = 'none';
+                const letterScreen = document.getElementById('letter-screen');
+                letterScreen.style.display = 'block';
+                letterScreen.offsetHeight; 
+                letterScreen.style.opacity = '1';
+                letterScreen.style.transform = 'translateY(0)';
+            }, 400);
+        }
+
+        function revealPhotos() {
+            const gallery = document.getElementById('hidden-gallery');
+            const hint = document.getElementById('tap-hint');
+            
+            gallery.style.display = 'block';
+            
+            setTimeout(() => {
+                gallery.classList.add('show');
+                hint.style.display = 'none';
+            }, 50);
+        }
+    </script>
+</body>
+</html>
